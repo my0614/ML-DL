@@ -20,4 +20,4 @@ plt.plot(line_x, line_y, 'r-')
 plt.plot(X,Y,'bo')
 plt.xlabel('population growth rate (%)')
 plt.ylabel('elderly growth rate (%)')
-plt.show()
+plt.show()ß
