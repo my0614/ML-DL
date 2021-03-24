@@ -24,7 +24,7 @@ print(wine_np[:5])
 
 #학습 train,test만들기
 train_idx = int(len(wine_np) * 0.8)#test 비율 8:2로 맞추기
-train_X, train_Y = wine_np[:train_idx, :-1], wine_np[:train_idx, :-1]
+train_X, train_Y = wine_np[:train_idx, :-1], wine_np[:train_idx, -1]
 test_X, test_Y =  wine_np[train_idx:, :-1], wine_np[train_idx:,-1]
 print(train_X[0])
 print(train_Y[0])
@@ -48,3 +48,26 @@ model = tf.keras.Sequential([
 model.compile(optimizer = tf.keras.optimizers.Adam(lr = 0.07), loss='categorical_crossentropy', metrics = ['accuracy'])
 
 model.summary()
+
+history = model.fit(train_X, train_Y, epochs = 25, batch_size = 32, validation_split = 0.25)
+
+#그래프 시각화
+plt.figure(figsize = (12,4))
+plt.subplot(1,2,1)
+plt.plot(history.history['loss'], 'b-', label ='loss')
+plt.plot(history.history['val_loss'],'r--', label='val_loss')
+plt.xlabel('Epoch')
+plt.legend()
+
+plt.subplot(1,2,2)
+plt.plot(history.history['accuracy'],'g-',label='accuracy')
+plt.plot(history.history['val_accuracy'], 'k--',label = 'val_accuracy')
+plt.xlabel('Epoch')
+plt.ylim(0.7,1)
+plt.legend()
+
+plt.show()
+
+#평가하기
+model.evaluate(test_X,test_Y) #정확도보기
+
