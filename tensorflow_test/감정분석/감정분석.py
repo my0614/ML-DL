@@ -50,3 +50,37 @@ sentences = [sentence.split(' ') for sentence in train_text_X] #문장을 띄어
 for i in range(5):
     print(sentences[i])
 
+sentence_len = [len(sentence) for sentence in sentences]
+sentence_len.sort() #문자열길이 정렬하기
+plt.plot(sentence_len)
+plt.show()
+
+#print(sum([int(i<=25) for i in sentence_len]))
+
+#단어길이 줄이기(정제)
+sentences_new = []
+for sentence in sentences:
+    sentences_new.append([word[:5] for word in sentence][:25])
+sentences = sentences_new
+for i in range(5):
+    print(sentences[i])
+
+from tensorflow.keras.preprocessing.text import Tokenizer
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+
+tokenizer = Tokenizer(num_words = 20000)
+tokenizer.fit_on_texts(sentences)
+train_X = tokenizer.texts_to_sequences(sentences)
+train_X = pad_sequences(train_X, padding='post')
+
+print(train_X[:5])
+
+print(tokenizer.index_word[19999])
+print(tokenizer.index_word[20000])
+
+temp = tokenizer.texts_to_sequences(['#$#$', '매력으로','영화네유 ','연기가']) #문자 입력받기
+print(temp)
+temp = pad_sequences(temp,padding = 'post') #패딩설정하기
+print(temp)
+
+
