@@ -83,4 +83,14 @@ print(temp)
 temp = pad_sequences(temp,padding = 'post') #패딩설정하기
 print(temp)
 
+model = tf.keras.Sequential([
+    tf.keras.layers.Embedding(20000, 300, input_length = 25), #각 문장에 들어있는 25개의 단어를 300의 임베딩 벡터로 변환합니다.
+    tf.keras.layers.LSTM(units = 50),
+    tf.keras.layers.Dense(2, activation='softmax')
+])
+
+model.compile(optimizer ='adam', loss='sparse_categorical_crossentropy', metrics = ['accuracy'])
+model.summary()
+
+history = model.fit(train_X, train_Y, epochs = 5, batch_size = 128, validation_split = 0.2)
 
