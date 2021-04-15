@@ -94,3 +94,45 @@ model.summary()
 
 history = model.fit(train_X, train_Y, epochs = 5, batch_size = 128, validation_split = 0.2)
 
+plt.figure(figsize = (12,4))
+plt.subplot(1,2,1)
+plt.plot(history.history['loss'],'b-',label = 'loss')
+plt.plot(history.history['val_loss'],'r--',label= 'val_loss')
+plt.xlabel('Epoch')
+plt.legend()
+plt.subplot(1,2,2)
+plt.plot(history.history['accuracy'],'g-', label='accuracy')
+plt.plot(history.history['val_accuracy'],'k--', label = 'val_accuracy')
+plt.xlabel('Epoch')
+plt.ylim(0.7, 1)
+plt.legend()
+
+plt.show()
+
+test_text_X = [row.split('\t')[1] for row in test_text.split('\n')[1:] if row.count('\t') > 0]
+test_text_X = [clean_str(sentence) for sentence in test_text_X] # 정규화해주기
+sentences = [sentence.split(' ') for sentence in test_text_X]
+sentences_new = []
+for sentence in sentences:
+    sentences_new.append([word[:5] for word in sentence][:25])
+sentences = sentences_new
+
+test_X = tokenizer.texts_to_sequences(sentences)
+test_X = pad_sequences(test_X, padding = 'post')
+
+model.evaluate(test_X, test_Y, verbose = 0)
+
+test_sentence = '재미있었고, 다음에 또 보고싶다' # 원하는문장 넣어보기!!
+test_sentence = test_sentence.split(' ')
+test_sentences =[]
+now_sentence= []
+for word in test_sentence:
+    now_sentence.append(word)
+    test_sentences.append(now_sentence[:])
+test_X_1 = tokenizer.texts_to_sequences(test_sentences)
+test_X_1 = pad_sequences(test_X_1, padding ='post', maxlen = 25) #문장 최대길이 25로 맞춤
+
+prediction = model.predict(test_X_1)
+for idx, sentence in enumerate(test_sentences):
+    print(sentence)
+    print(prediction[idx])
