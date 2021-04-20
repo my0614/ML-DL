@@ -132,3 +132,39 @@ test_X = tokenizer.texts_to_sequences(sentences)
 test_X = pad_sequences(test_X, padding = 'post')
 
 model.evaluate(test_X, test_Y, verbose = 0)
+
+review_list = list(movie.values())
+
+movie = {}
+for page in range(1,22):
+    print('page : ',page)
+    source = requests.get("https://movie.naver.com/movie/point/af/list.nhn?&page=%d" % page).text
+    soup = BeautifulSoup(source, "html.parser")
+    hotkeys = soup.select("a.movie.color_b") #class가지고 오기
+    text_value = soup.select(".title")
+    for i in range(10):
+        a=  text_value[i].text.split('\n')
+        movie_name = a[1]
+        review = a[5]
+        movie[movie_name] = review
+
+print('length :', len(movie))
+result = {}
+for i in range(len(review_list)):
+    test_sentence =  review_list[i]# 원하는문장 넣어보기!!
+    test_sentence = test_sentence.split(' ')
+    test_sentences =[]
+    now_sentence= []
+    for word in test_sentence:
+        now_sentence.append(word)
+        test_sentences.append(now_sentence[:])
+    test_X_1 = tokenizer.texts_to_sequences(test_sentences)
+    test_X_1 = pad_sequences(test_X_1, padding ='post', maxlen = 25) #문장 최대길이 25로 맞춤
+
+    prediction = model.predict(test_X_1)
+    for idx, sentence in enumerate(test_sentences):
+            pass
+    print(sentence)
+    print(prediction[idx])
+    #print('movie_name',movie[i])
+    #result[review_list[i]]
