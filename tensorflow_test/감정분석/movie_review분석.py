@@ -133,11 +133,15 @@ test_X = pad_sequences(test_X, padding = 'post')
 
 model.evaluate(test_X, test_Y, verbose = 0)
 
-review_list = list(movie.values())
 
 movie = {}
+def find_key(value1):
+    for key, value in movie.items():
+        if value == value1:
+            return key
+            
 for page in range(1,22):
-    print('page : ',page)
+    #print('page : ',page)
     source = requests.get("https://movie.naver.com/movie/point/af/list.nhn?&page=%d" % page).text
     soup = BeautifulSoup(source, "html.parser")
     hotkeys = soup.select("a.movie.color_b") #class가지고 오기
@@ -147,7 +151,8 @@ for page in range(1,22):
         movie_name = a[1]
         review = a[5]
         movie[movie_name] = review
-
+        
+review_list = list(movie.values())
 print('length :', len(movie))
 result = {}
 for i in range(len(review_list)):
@@ -164,7 +169,12 @@ for i in range(len(review_list)):
     prediction = model.predict(test_X_1)
     for idx, sentence in enumerate(test_sentences):
             pass
-    print(sentence)
-    print(prediction[idx])
-    #print('movie_name',movie[i])
-    #result[review_list[i]]
+    #print(sentence)
+    #print(prediction[idx][1])
+    if prediction[idx][1] > 0.5:
+        state = 1
+    else:
+        state = 0
+    key = find_key(review_list[i])
+    result[key] =state  #reusult에 영화이름과 분석결과 넣기
+print(result)
