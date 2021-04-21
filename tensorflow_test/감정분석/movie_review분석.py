@@ -188,6 +188,11 @@ print(len(movie_name), len(state))
 import pandas as pd
 import numpy as np
 
-
 df = pd.DataFrame(movie_name,columns =['영화 이름'])
 df.insert(1,'리뷰상태', state)
+name = input()
+print('영화이름 : ', name)
+#원하는 영화 리뷰보기
+print(len(df[df['영화 이름'] == name]))
+print('긍정적인 리뷰의 개수는',len(df[(df['리뷰상태'] == '1')& (df['영화 이름'] == name)]))
+print('부정적인 리뷰의 개수는',len(df[(df['리뷰상태'] == '0')& (df['영화 이름'] == name)]))
