@@ -132,7 +132,15 @@ test_X = tokenizer.texts_to_sequences(sentences)
 test_X = pad_sequences(test_X, padding = 'post')
 
 model.evaluate(test_X, test_Y, verbose = 0)
+class text(object):
+    def __init__(self,name):
+        self.name = name
 
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return "'"+self.name+"'"
 
 movie = {}
 def find_key(value1):
@@ -150,10 +158,10 @@ for page in range(1,22):
         a=  text_value[i].text.split('\n')
         movie_name = a[1]
         review = a[5]
-        movie[movie_name] = review
-        
+        movie[text(movie_name)] = review
+print('movie len : ',movie)
+
 review_list = list(movie.values())
-print('length :', len(movie))
 result = {}
 for i in range(len(review_list)):
     test_sentence =  review_list[i]# 원하는문장 넣어보기!!
