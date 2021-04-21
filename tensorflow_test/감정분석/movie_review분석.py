@@ -132,7 +132,7 @@ test_X = tokenizer.texts_to_sequences(sentences)
 test_X = pad_sequences(test_X, padding = 'post')
 
 model.evaluate(test_X, test_Y, verbose = 0)
-class text(object):
+class person(object):
     def __init__(self,name):
         self.name = name
 
@@ -142,7 +142,8 @@ class text(object):
     def __repr__(self):
         return "'"+self.name+"'"
 
-movie = {}
+movie_name = []
+review = []
 def find_key(value1):
     for key, value in movie.items():
         if value == value1:
@@ -156,15 +157,12 @@ for page in range(1,22):
     text_value = soup.select(".title")
     for i in range(10):
         a=  text_value[i].text.split('\n')
-        movie_name = a[1]
-        review = a[5]
-        movie[text(movie_name)] = review
-print('movie len : ',movie)
+        movie_name.append(a[1])
+        review.append(a[5])
 
-review_list = list(movie.values())
-result = {}
+state = []
 for i in range(len(review_list)):
-    test_sentence =  review_list[i]# 원하는문장 넣어보기!!
+    test_sentence =  review[i]# 원하는문장 넣어보기!!
     test_sentence = test_sentence.split(' ')
     test_sentences =[]
     now_sentence= []
@@ -180,9 +178,16 @@ for i in range(len(review_list)):
     #print(sentence)
     #print(prediction[idx][1])
     if prediction[idx][1] > 0.5:
-        state = 1
+        state.append('1')
     else:
-        state = 0
-    key = find_key(review_list[i])
-    result[key] =state  #reusult에 영화이름과 분석결과 넣기
-print(result)
+        state.append('0')
+number = []
+for i in range(len(state)):
+    number.append(i) 
+print(len(movie_name), len(state))
+import pandas as pd
+import numpy as np
+
+
+df = pd.DataFrame(movie_name,columns =['영화 이름'])
+df.insert(1,'리뷰상태', state)
