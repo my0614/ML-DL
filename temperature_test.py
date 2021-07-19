@@ -49,3 +49,4 @@ uni_train_mean = uni_data[:TRAIN_SPLIT].mean() # 온도 평균 구하기
 uni_train_std = uni_data[:TRAIN_SPLIT].std() # 온도 표준편차 구하기
 uni_data = (uni_data-uni_train_mean) / uni_train_std
 print('데이터 표준화',uni_data)
+
