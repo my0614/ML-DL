@@ -1,14 +1,17 @@
+
 from typing import no_type_check
 import os
-import numpy as no_type_check
+from matplotlib.colors import Normalize
+import numpy as np
 from numpy.lib.function_base import select
+import matplotlib.pyplot as plt
 
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 from torchvision import transforms, datasets
-
+import matplotlib.pyplot as plt
 lr = 1e-3
 bathc_size = 4
 num_epoch = 100
@@ -19,6 +22,53 @@ log_dir = './log'
 
 #cpu ,gpu 디바이스 선택하기
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+## 트랜스폼 구현하기
+#numpy 이미지 채널 (y,x,ch)
+#tensor 이미지 채널(ch, y,x)
+class ToTensor(object):
+    def __call__(self,data):
+        label, input = data['label'], data['input']
+
+        # numpy -> tensor로 변환하기
+        label = label.transpose((2,0,1)).astype(np.float32)
+        input = input.transpose((2,0,1)).astype(np.float32)
+
+        # from_numpy -> 텐서플로로 변환할때 사용하는 함수
+        data = {'label': torch.from_numpy(label), 'input': torch.from_numpy(input)}
+        return data
+
+# nomalization 하기
+class Nomalization(object):
+    def __init__(self, mean = 0.5, std = 0.5):
+        self.mean = mean
+        self.std = std
+
+    def __call__(self, data):
+        label, input = data['label'], data['input']
+        input = (input - self.mean) / self.std
+        data = {'label' : label, 'input' : input}
+
+        return data
+
+class RandomFlip(object):
+    def __call__(self, data):
+        label, input = data['label'], data['input']
+
+        # numpy 배열 좌우 뒤집기 
+        if np.random.rand() > 0.5:
+            label = np.fliplr(label)
+            input = np.fliplr(input)
+
+        # numpy배열 상하좌우 반전
+        if np.random.rand() > 0.5:
+            label = np.flipud(label)
+            input = np.flipud(input)
+        
+        data = {'label': label, 'input': input}
+        
+        return data
+
 
 # unet 네트워크 구조
 
@@ -123,4 +173,66 @@ class UNet(nn.Module):
         return x
 
 
+
+# 데이터 로더 구현하기
+class Dataset(torch.utils.data.Dataset):
+    def __init__(self, data_dir, transform = None):
+        self.data_dir = data_dir
+        self.transform = transform
+
+        lst_data = os.listdir(self.data_dir) # 디렉토리에 있는것 가지고 오기
+        lst_label = [f for f  in lst_data if f.startswith('label')]
+        lst_input = [f for f  in lst_data if f.startswith('input')]
+ 
+        # 라벨 정렬하기
+        lst_label.sort()
+        lst_label.sort()
+
+        self.lst_label = lst_label
+        self.lst_input = lst_input
+
+    def __len__(self):
+        return len(self.lst_label)
+
+    def __getitem__(self,index):
+        label = np.load(os.path.join(self.data_dir, self.lst_label[index]))
+        input = np.load(os.path.join(self.data_dir, self.lst_input[index]))
+        
+        #0~1사이로 변환
+        # input = (input - np.min(input))/(np.max(input) - np.min(input)) 
+
+        #input = input - np.min(input)
+        #input = input / np.max(input)
+        
+        label = label / 255.0 - 0.5
+        input = input / 255.0 - 0.5
+
+        if label.ndim == 2:
+            label = label[:,:,np.newaxis]
+        if input.ndim == 2:
+            input = input[:,:,np.newaxis]
+ 
+        data = {'input' : input, 'label' : label}
+
+        if self.transform:
+            data = self.transform(data)
+        
+        return data
+
+#transform = transforms.Compose([Nomalization(mean = 0.5, std = 0.5), RandomFlip(), ToTensor()])
+transform = transforms.Compose([RandomFlip(), ToTensor()])
+dataset_train = Dataset(data_dir= os.path.join(data_dir, 'train'), transform=transform)
+
+data = dataset_train.__getitem__(0) # getitem의 인자값을 바꿀때 dataset 이미지 파일 바뀜
+input = data['input']
+label = data['label']
+print(input.shape)
+
+plt.subplot(121) # 벡터
+plt.imshow(input.squeeze())
+
+plt.subplot(122)
+plt.imshow(label.squeeze())
+
+plt.show()
 
