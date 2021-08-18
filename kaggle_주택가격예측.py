@@ -14,8 +14,11 @@ df['Alley'] = (df['Alley'].fillna(0))
 df['Alley'] = (df['Alley']!= 0)
 df['HouseStyle']= df.HouseStyle.str.extract('(\d+)')
 df['HouseStyle'].fillna(random.choice(['1','2']), inplace = True) # 랜덤으로 Embarked 정해주기
+df['HouseStyle1floor']= (df['HouseStyle'] == '1')
+df['HouseStyle2floor']= (df['HouseStyle'] == '2')
+del df['HouseStyle']
 
-df['OverallQual1'] = (df['OverallQual']>=1) & (df['OverallQual'] <= 5)
+df['OverallQual'] = (df['OverallQual']>=1) & (df['OverallQual'] <= 5)
 df['OverallQual2'] = (df['OverallQual']>=6) & (df['OverallQual'] <= 10)
 del df['OverallQual']
 
@@ -32,4 +35,13 @@ del df['OverallCond']
 df['KitchenQual1'] = (df['KitchenQual'] == 'Ex') | (df['KitchenQual'] == 'Gd') | (df['KitchenQual'] == 'TA')
 df['KitchenQual0'] = (df['KitchenQual'] == 'Fa') | (df['KitchenQual'] == 'Po') | (df['KitchenQual'] == 'NA')
 del df['KitchenQual']
-df
+del df['GarageCond']
+
+df['GarageQual1'] = (df['GarageQual'] == 'Ex') | (df['GarageQual'] == 'Gd') | (df['GarageQual'] == 'TA')
+df['GarageQual0'] = (df['GarageQual'] == 'Fa') | (df['GarageQual'] == 'Po') | (df['GarageQual'] == 'NA')
+del df['GarageQual']
+del df['YrSold']
+foundation= pd.get_dummies(df['Foundation'])
+del df['Foundation']
+del df['SaleCondition']
+re = pd.concat([df,salecondition],axis = 1)
