@@ -15,9 +15,21 @@ df['Alley'] = (df['Alley']!= 0)
 df['HouseStyle']= df.HouseStyle.str.extract('(\d+)')
 df['HouseStyle'].fillna(random.choice(['1','2']), inplace = True) # 랜덤으로 Embarked 정해주기
 
-df['OverallQual1'] = (df['OverallQual']>=1) & (df['OverallQual'] <= 3)
-df['OverallQual2'] = (df['OverallQual']>=4) & (df['OverallQual'] <= 6)
-df['OverallQual3'] = (df['OverallQual']>=7) & (df['OverallQual'] <= 10)
-
+df['OverallQual1'] = (df['OverallQual']>=1) & (df['OverallQual'] <= 5)
+df['OverallQual2'] = (df['OverallQual']>=6) & (df['OverallQual'] <= 10)
 del df['OverallQual']
+
+
+df['YearBuilt1800'] =  (df['YearBuilt']>= 1800) & (df['YearBuilt'] <=1899)
+df['YearBuilt1900'] =  (df['YearBuilt']>= 1900) & (df['YearBuilt'] <=1999)
+df['YearBuilt2000'] =  (df['YearBuilt']>= 2000) & (df['YearBuilt'] <=2099)
+del df['YearBuilt']
+
+df['OverallCond1'] = (df['OverallCond']>=1) & (df['OverallCond'] <= 5)
+df['OverallCond2'] = (df['OverallCond']>=6) & (df['OverallCond'] <= 10)
+del df['OverallCond']
+
+df['KitchenQual1'] = (df['KitchenQual'] == 'Ex') | (df['KitchenQual'] == 'Gd') | (df['KitchenQual'] == 'TA')
+df['KitchenQual0'] = (df['KitchenQual'] == 'Fa') | (df['KitchenQual'] == 'Po') | (df['KitchenQual'] == 'NA')
+del df['KitchenQual']
 df
