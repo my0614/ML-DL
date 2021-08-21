@@ -89,19 +89,24 @@ if __name__ == '__main__':
     for train,val in skf.split(X,Y):
         #모델 생성
         model = Sequential()
-        model.add(Dense(1, input_dim = 14, activation = 'relu', kernel_initializer ='uniform'))
-        model.add(BatchNormalization())
-        model.add(Dense(24, activation = 'elu', kernel_initializer = 'uniform'))
-        model.add(Dense(80, activation = 'elu', kernel_initializer = 'uniform'))
-        model.add(Dense(128, activation = 'elu', kernel_initializer = 'uniform'))
-        model.add(Dropout(0.5))
-        model.add(Dense(1, activation = 'sigmoid', kernel_initializer = 'uniform'))
-        model.compile(loss='binary_crossentropy', optimizer = Nadam(lr = 0.0005), metrics = ['accuracy'])
+        """
+        model.add(Dense(1, input_dim = 14, activation = 'relu'))
+        model.add(Dense(24, activation = 'relu'))
+        model.add(Dense(100, activation = 'relu'))
+        model.add(Dense(150, activation = 'relu'))
+        model.add(Dense(1, activation = 'sigmoid'))
+        
+        """
+        #모델구축
+        model.add(Dense(32, input_dim = 14, activation = 'relu'))
+        model.add(Dense(16, activation='relu'))
+        model.add(Dense(1)) # output = 1
+        model.compile(loss='mean_squared_error', optimizer='adam', metrics = ['accuracy']) 
         earlyStopping_callback = EarlyStopping(monitor = 'val_loss', patience = 10)
 
         earlyStopping_callback = EarlyStopping(monitor = 'val_loss', patience = 10)
-        model.fit(X[train], Y[train], validation_data = (X[val], Y[val]), batch_size = 50, epochs = 1000, verbose = 1, callbacks=[earlyStopping_callback])
-        model.save(f'k_fold_{i}.pt')
+        model.fit(X[train], Y[train], validation_data = (X[val], Y[val]), batch_size = 33, epochs = 100, verbose = 1, callbacks=[earlyStopping_callback])
+        #model.save(f'k_fold_{i}.pt')
         k_accuracy = '%.4f' %(model.evaluate(X_test, Y_test)[1])
         print(k_accuracy)
         print("=" * 100)
@@ -109,7 +114,6 @@ if __name__ == '__main__':
         print(X_test.shape)
         predictions = model.predict(X_test).reshape(X_test.shape[0])
         accuracy2.append(k_accuracy)
-        sample.to_csv(f'./kim_submission{i}.csv',index=False) #csv 파일저장
+        #sample.to_csv(f'./kim_submission{i}.csv',index=False) #csv 파일저장
         i = i+1
     print(accuracy2)
- 
