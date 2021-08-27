@@ -18,10 +18,16 @@ test['hour_bef_humidity'] = test['hour_bef_humidity'] >=60
 del test['hour_bef_visibility']
 del test['hour_bef_ozone']
 del test['hour_bef_pm10']
-test
+
 test['late dust0'] =  (test['hour_bef_pm2.5'] >=0) &  (test['hour_bef_pm2.5'] <=30) # 좋음
 test['late dust1'] =  (test['hour_bef_pm2.5'] >=31) &  (test['hour_bef_pm2.5'] <=80) # 보통
 test['late dust2'] =  (test['hour_bef_pm2.5'] >=81) &  (test['hour_bef_pm2.5'] <=150) # 나쁨
 test['late dust3'] =  (test['hour_bef_pm2.5'] >=151)# 매우 나쁨
 del test['hour_bef_pm2.5']
-test
+
+test['temp_up'] = test['hour_bef_temperature'] >= 17
+test['temp_down'] = test['hour_bef_temperature'] <17
+del test['hour_bef_temperature']
+
+test['rain'] = test['hour_bef_precipitation'] == 0
+del test['hour_bef_precipitation']
